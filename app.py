@@ -29,8 +29,9 @@ def show_sidebar():
 
         if is_logged_in():
             user = current_user()
-            st.write(f"**{user['name']}**")
-            st.caption(f"Role: {user['role'].capitalize()}")
+            st.write(f"**{user.get('name', 'User')}**")
+            role = str(user.get("role", "")).strip()
+            st.caption(f"Role: {role.capitalize() if role else 'Unknown'}")
             st.divider()
             if st.button("🚪 Logout", use_container_width=True):
                 logout()
@@ -67,14 +68,15 @@ def main():
         return
 
     user = current_user()
-    role = user.get("role")
+    role = str(user.get("role", "")).strip().lower()
 
     if role == "admin":
         show_admin_dashboard()
     elif role == "member":
         show_member_dashboard()
     else:
-        st.error("Unknown user role. Please contact support.")
+        st.error(f"Could not determine your role (got: '{role}'). This usually means the users sheet has a blank role column.")
+        st.info("Check your Google Sheet → users tab → confirm the 'role' column has 'admin' or 'member' for this user.")
         if st.button("Logout"):
             logout()
             st.rerun()
