@@ -117,9 +117,3 @@ cooperative_os/
 
 ---
 
-## Important Notes
-
-- **Never commit `secrets.toml` to GitHub.** Add `.streamlit/secrets.toml` to your `.gitignore`
-- Passwords are SHA-256 hashed — not plain text
-- The Google Sheets API has rate limits (100 req/100s). For testing with 2-3 orgs this is fine
-- When you're ready to move to Supabase, the `sheets.py` file is the only layer to replace
