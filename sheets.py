@@ -56,10 +56,17 @@ def get_sheet(tab_name: str):
 
 def read_sheet(tab_name: str) -> pd.DataFrame:
     ws = get_sheet(tab_name)
-    records = ws.get_all_records()
+    records = ws.get_all_records(
+        expected_headers=HEADERS[tab_name],
+        value_render_option="FORMATTED_VALUE",
+    )
     if not records:
         return pd.DataFrame(columns=HEADERS[tab_name])
-    return pd.DataFrame(records)
+    df = pd.DataFrame(records)
+    # Force all columns to string — gspread returns ints for numeric-looking cells
+    for col in df.columns:
+        df[col] = df[col].astype(str).str.strip()
+    return df
 
 
 def append_row(tab_name: str, row: dict):
