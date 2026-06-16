@@ -28,7 +28,9 @@ def login(email: str, password: str) -> bool:
         return False
     if not verify_password(password, user["password_hash"]):
         return False
-    st.session_state["user"] = user
+    # Ensure all values are clean strings before storing in session
+    clean_user = {k: str(v).strip() for k, v in user.items()}
+    st.session_state["user"] = clean_user
     st.session_state["logged_in"] = True
     return True
 
