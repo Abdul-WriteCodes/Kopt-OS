@@ -18,7 +18,11 @@ def format_naira(amount) -> str:
 def show_admin_dashboard():
     require_role("admin")
     user = current_user()
-    org_id = user["org_id"]
+    org_id = user.get("org_id", "").strip()
+    if not org_id:
+        st.error("Your account is missing an organization ID. Check the 'org_id' column header in the users sheet.")
+        st.json(user)  # shows exactly what keys came back — remove after debugging
+        st.stop()
     org = get_org_by_id(org_id)
     org_name = org["name"] if org else "Your Cooperative"
     org_code = org["org_code"] if org else ""
@@ -63,13 +67,18 @@ def _show_overview(org_id: str):
 
     if not contributions_df.empty:
         st.subheader("Recent Contributions")
-        recent = contributions_df.sort_values("date", ascending=False).head(5)
-        st.dataframe(
-            recent[["date", "member_name", "amount"]].rename(columns={
-                "date": "Date", "member_name": "Member", "amount": "Amount (₦)"
-            }),
-            use_container_width=True, hide_index=True
-        )
+        available_cols = contributions_df.columns.tolist()
+        cols = [c for c in ["date", "member_name", "amount"] if c in available_cols]
+        if cols:
+            recent = contributions_df.sort_values("date", ascending=False).head(5) if "date" in available_cols else contributions_df.head(5)
+            st.dataframe(
+                recent[cols].rename(columns={
+                    "date": "Date", "member_name": "Member", "amount": "Amount (₦)"
+                }),
+                use_container_width=True, hide_index=True
+            )
+        else:
+            st.warning(f"Unexpected column names in contributions sheet: {available_cols}")
 
 
 def _show_members(org_id: str):
