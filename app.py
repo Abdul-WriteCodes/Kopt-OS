@@ -13,18 +13,12 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# ── Minimal global styles ─────────────────────────────────────────────────────
-st.markdown("""
-<style>
-    [data-testid="stSidebar"] { background-color: #f8f9fa; }
-    .stMetric { background: #fff; padding: 1rem; border-radius: 8px; border: 1px solid #e9ecef; }
-</style>
-""", unsafe_allow_html=True)
+# Remove custom metric CSS — it conflicts with Streamlit's dark/light theme
 
 
 def show_sidebar():
     with st.sidebar:
-        st.image("https://via.placeholder.com/200x60?text=Cooperative+OS", use_container_width=True)
+        st.markdown("## 🏛️ Cooperative OS")
         st.divider()
 
         if is_logged_in():
